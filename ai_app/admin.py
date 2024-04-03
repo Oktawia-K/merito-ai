@@ -3,4 +3,5 @@ from .models import ImageElements
 
 # Register your models here.
 
-admin.site.register(ImageElements)
+admin.site.register(ImageElement)
+admin.site.register(TextElement)
