@@ -2,7 +2,7 @@ from django.db import models
 import openai
 import os
 
-openai.api_key = os.environ.get('OPEN_API_KEY')
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 def generate_description_from_title(title):
     try:
