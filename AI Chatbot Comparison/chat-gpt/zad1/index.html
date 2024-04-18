@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Image Generator</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        #randomImage {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <img id="randomImage" src="" alt="Random Image">
+    
+    <script>
+        // Array of image URLs
+        var images = [
+            "https://via.placeholder.com/400", // Placeholder image URL
+            "https://source.unsplash.com/random",
+            "https://placeimg.com/400/400/any",
+            // Add more image URLs here
+        ];
+
+        // Function to get a random image URL
+        function getRandomImage() {
+            var randomIndex = Math.floor(Math.random() * images.length);
+            return images[randomIndex];
+        }
+
+        // Function to set a random image
+        function setRandomImage() {
+            var randomImageUrl = getRandomImage();
+            document.getElementById("randomImage").src = randomImageUrl;
+        }
+
+        // Set a random image when the page loads
+        window.onload = setRandomImage;
+    </script>
+</body>
+</html>

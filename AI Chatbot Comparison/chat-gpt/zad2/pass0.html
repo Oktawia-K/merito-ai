@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .invoice-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .invoice {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+            width: 300px;
+        }
+        .invoice h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Invoice Manager</h1>
+
+    <div class="invoice-container" id="invoicesContainer">
+        <!-- Invoices will be dynamically added here -->
+    </div>
+
+    <script>
+        // Dummy data for one-time invoices
+        const oneTimeInvoices = [
+            { id: 1, title: 'Web Hosting', amount: 50, dueDate: '2024-04-30' },
+            { id: 2, title: 'Graphic Design Service', amount: 150, dueDate: '2024-05-15' },
+        ];
+
+        // Dummy data for recurring payments
+        const recurringInvoices = [
+            { id: 1, title: 'Subscription Service', amount: 20, dueDate: '2024-05-01', recurrence: 'Monthly' },
+            { id: 2, title: 'Membership Fee', amount: 100, dueDate: '2024-05-10', recurrence: 'Yearly' },
+        ];
+
+        // Function to render invoices
+        function renderInvoices() {
+            const invoicesContainer = document.getElementById('invoicesContainer');
+            invoicesContainer.innerHTML = '';
+
+            // Render one-time invoices
+            oneTimeInvoices.forEach(invoice => {
+                const invoiceElement = createInvoiceElement(invoice);
+                invoicesContainer.appendChild(invoiceElement);
+            });
+
+            // Render recurring invoices
+            recurringInvoices.forEach(invoice => {
+                const invoiceElement = createInvoiceElement(invoice);
+                invoicesContainer.appendChild(invoiceElement);
+            });
+        }
+
+        // Function to create invoice element
+        function createInvoiceElement(invoice) {
+            const invoiceElement = document.createElement('div');
+            invoiceElement.classList.add('invoice');
+
+            const titleElement = document.createElement('h3');
+            titleElement.textContent = invoice.title;
+            invoiceElement.appendChild(titleElement);
+
+            const amountElement = document.createElement('p');
+            amountElement.textContent = `Amount: $${invoice.amount}`;
+            invoiceElement.appendChild(amountElement);
+
+            const dueDateElement = document.createElement('p');
+            dueDateElement.textContent = `Due Date: ${invoice.dueDate}`;
+            invoiceElement.appendChild(dueDateElement);
+
+            if (invoice.recurrence) {
+                const recurrenceElement = document.createElement('p');
+                recurrenceElement.textContent = `Recurrence: ${invoice.recurrence}`;
+                invoiceElement.appendChild(recurrenceElement);
+            }
+
+            return invoiceElement;
+        }
+
+        // Call renderInvoices function to display invoices
+        renderInvoices();
+    </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .invoice-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .invoice {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+            width: 300px;
+        }
+        .invoice h3 {
+            margin-top: 0;
+        }
+        .pay-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .pay-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Invoice Manager</h1>
+
+    <div class="invoice-container" id="invoicesContainer">
+        <!-- Invoices will be dynamically added here -->
+    </div>
+
+    <script>
+        // Function to get saved invoices from localStorage
+        function getInvoices() {
+            const savedInvoices = localStorage.getItem('invoices');
+            return savedInvoices ? JSON.parse(savedInvoices) : [];
+        }
+
+        // Function to save invoices to localStorage
+        function saveInvoices(invoices) {
+            localStorage.setItem('invoices', JSON.stringify(invoices));
+        }
+
+        // Function to render invoices
+        function renderInvoices() {
+            const invoicesContainer = document.getElementById('invoicesContainer');
+            invoicesContainer.innerHTML = '';
+
+            const invoices = getInvoices();
+
+            invoices.forEach(invoice => {
+                const invoiceElement = createInvoiceElement(invoice);
+                invoicesContainer.appendChild(invoiceElement);
+            });
+        }
+
+        // Function to create invoice element
+        function createInvoiceElement(invoice) {
+            const invoiceElement = document.createElement('div');
+            invoiceElement.classList.add('invoice');
+
+            const titleElement = document.createElement('h3');
+            titleElement.textContent = invoice.title;
+            invoiceElement.appendChild(titleElement);
+
+            const amountElement = document.createElement('p');
+            amountElement.textContent = `Amount: $${invoice.amount}`;
+            invoiceElement.appendChild(amountElement);
+
+            const dueDateElement = document.createElement('p');
+            dueDateElement.textContent = `Due Date: ${invoice.dueDate}`;
+            invoiceElement.appendChild(dueDateElement);
+
+            const payButton = document.createElement('button');
+            payButton.textContent = 'Pay';
+            payButton.classList.add('pay-button');
+            payButton.onclick = function() {
+                payInvoice(invoice);
+            };
+            invoiceElement.appendChild(payButton);
+
+            return invoiceElement;
+        }
+
+        // Function to pay an invoice
+        function payInvoice(invoice) {
+            const invoices = getInvoices();
+            const index = invoices.findIndex(inv => inv.id === invoice.id);
+
+            if (index !== -1) {
+                // Remove single payment invoice or advance recurring payment
+                if (invoice.recurring) {
+                    // Advance to the next cycle
+                    const dueDate = new Date(invoice.dueDate);
+                    switch (invoice.recurrence) {
+                        case 'Monthly':
+                            dueDate.setMonth(dueDate.getMonth() + 1);
+                            break;
+                        case 'Yearly':
+                            dueDate.setFullYear(dueDate.getFullYear() + 1);
+                            break;
+                        // Add more recurrence options as needed
+                    }
+                    invoices[index].dueDate = dueDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+                } else {
+                    // Remove single payment invoice
+                    invoices.splice(index, 1);
+                }
+
+                // Save updated invoices
+                saveInvoices(invoices);
+
+                // Render updated list of invoices
+                renderInvoices();
+            }
+        }
+
+        // Initialize invoice manager
+        renderInvoices();
+    </script>
+
+    <!-- Add invoice form -->
+    <h2>Add Invoice</h2>
+    <form id="addInvoiceForm">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" required><br>
+        <label for="amount">Amount:</label><br>
+        <input type="number" id="amount" name="amount" min="0" step="0.01" required><br>
+        <label for="dueDate">Due Date:</label><br>
+        <input type="date" id="dueDate" name="dueDate" required><br>
+        <label for="recurrence">Recurrence (optional):</label><br>
+        <select id="recurrence" name="recurrence">
+            <option value="">None</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Yearly">Yearly</option>
+            <!-- Add more recurrence options as needed -->
+        </select><br>
+        <button type="submit">Add Invoice</button>
+    </form>
+
+    <script>
+        // Add invoice form submission handler
+        const addInvoiceForm = document.getElementById('addInvoiceForm');
+        addInvoiceForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const dueDate = document.getElementById('dueDate').value;
+            const recurrence = document.getElementById('recurrence').value;
+
+            const newInvoice = {
+                id: Date.now(), // Unique ID for the invoice
+                title: title,
+                amount: amount,
+                dueDate: dueDate,
+                recurring: recurrence !== '',
+                recurrence: recurrence !== '' ? recurrence : undefined,
+            };
+
+            const invoices = getInvoices();
+            invoices.push(newInvoice);
+            saveInvoices(invoices);
+
+            renderInvoices();
+
+            // Clear form fields
+            addInvoiceForm.reset();
+        });
+    </script>
+</body>
+</html>
